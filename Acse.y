@@ -89,11 +89,11 @@ t_reg_allocator *RA;       /* Register allocator. It implements the "Linear scan
 
 t_io_infos *file_infos;    /* input and output files used by the compiler */
 
- t_list *exist = NULL;
- t_axe_label *incrementation = NULL;
- int currentArraySize = 0;
- int first_index_to_be_incremented_reg;
-t_axe_label *begin_incremento = NULL;
+ +t_list *exist = NULL;
+ +t_axe_label *incrementation = NULL;
+ +int currentArraySize = 0;
+ +int first_index_to_be_incremented_reg;
+ +t_axe_label *begin_incremento = NULL;
 %}
 
 %expect 1
@@ -126,7 +126,7 @@ t_axe_label *begin_incremento = NULL;
 %token RETURN
 %token READ
 %token WRITE NGAMI
-%token <label> EXISTS
++%token <label> EXISTS
 
 %token <label> DO
 %token <while_stmt> WHILE
@@ -460,75 +460,75 @@ write_statement : WRITE LPAR exp RPAR
 
 exp: NUMBER      { $$ = create_expression ($1, IMMEDIATE); }
    | IDENTIFIER  {
-                     int location, notFound = 1;
-   
-                     /* get the location of the symbol with the given ID */
-
-			if(exist){
-				/*valuto se ID fa parte della lista degli index di exist*/
-				t_list *iei = getLastElement(exist); 
-				char *i = NULL; 
-
-				while(iei){
-
-				     i = ((id_exist_info *)LDATA(iei))->id;
-
-				     if (!strcmp(i, $1)){
-
-						/*ID fa parte della lista index. e quindi location = i->registro; */ 
-						/* 
-						qua determino il prossimo index da incrementare: il modo in cui incremento è il seguente: 							supponiamo di avere 2 registri uno per ogni index nella lista iei. Ogni index è limitato 							dall'arraySize ( es: 2, 3) dell' array in cui serve ad indicizzare. la sequenza di incremento 							è 00, 10, 01, 11, 02, 12.
-						*/
-						notFound = 0;
-						t_axe_label *endOfThisElaboration = newLabel(program), *NextIndexIncrementabile = newLabel(program); 
-						location = ((id_exist_info *)LDATA(iei))->index_reg;
-
-						gen_subi_instruction(program,getNewRegister(program), location, currentArraySize);
-
-						gen_blt_instruction(program, endOfThisElaboration, 0);/*il prossimo da incrementare rimane 							sempre first_index_to_be_incremented_reg, il primo registro nell'ordine di incremento, se 							salto a endOfThisElaboration*/
-
-						gen_addi_instruction(program, location, REG_0, 0);
-
-						if(LPREV(iei)) {
-
-							/*
-							se l'index ha raggiunto il suo massimo e non è l'ultimo nell' ordine di incremento, 								va azzerato; e quello che lo segue nell' ordine di incremento va segnato come da 								incrementare nell prossimo giro
-							*/
-
-							gen_subi_instruction(program, getNewRegister(program), ((id_exist_info *)LDATA(LPREV(iei)))->non_piu_incrementabile_reg, 1); 						
-							gen_bne_instruction(program, NextIndexIncrementabile, 0);
-
-							gen_addi_instruction(program, ((id_exist_info *)LDATA(iei))->non_piu_incrementabile_reg, REG_0, 1);
-							gen_bt_instruction(program, endOfThisElaboration, 0);
-
-							assignLabel(program, NextIndexIncrementabile);	
-
-							gen_addi_instruction(program, ((id_exist_info *)LDATA(LPREV(iei)))->to_be_incremented_reg, REG_0, 1); 
-							gen_addi_instruction(program, first_index_to_be_incremented_reg, REG_0, 0);
-
-						}else{
-							/*se l'index ha raggiunto il suo massimo ed è l'ultimo nell' ordine di incremento*/
-							gen_addi_instruction(program, ((id_exist_info *)LDATA(iei))->non_piu_incrementabile_reg, REG_0, 1);
-							}
-						/*
-						torniamo prima ad incrementare il prossimo nell'ordine di incremento prima di tornare qui 							*/
-						gen_bt_instruction(program, begin_incremento, 0);
-
-						assignLabel(program, endOfThisElaboration);
-			    	 		break;
-		     			} 
-
-		   			iei = LPREV(iei);
-
-	   			}
-
-			}else {
-
-				   /*l'ID non è nella lista exist*/
-				   if(notFound) location = get_symbol_location(program, $1, 0);
-
-				}
-                     
++                     int location, notFound = 1;
++   
++                     /* get the location of the symbol with the given ID */
++
++			if(exist){
++				/*valuto se ID fa parte della lista degli index di exist*/
++				t_list *iei = getLastElement(exist); 
++				char *i = NULL; 
++
++				while(iei){
++
++				     i = ((id_exist_info *)LDATA(iei))->id;
++
++				     if (!strcmp(i, $1)){
++
++						/*ID fa parte della lista index. e quindi location = i->registro; */ 
++						/* 
++						qua determino il prossimo index da incrementare: il modo in cui incremento è il seguente: 							supponiamo di avere 2 registri uno per ogni index nella lista iei. Ogni index è limitato 							dall'arraySize ( es: 2, 3) dell' array in cui serve ad indicizzare. la sequenza di incremento 							è 00, 10, 01, 11, 02, 12.
++						*/
++						notFound = 0;
++						t_axe_label *endOfThisElaboration = newLabel(program), *NextIndexIncrementabile = newLabel(program); 
++						location = ((id_exist_info *)LDATA(iei))->index_reg;
++
++						gen_subi_instruction(program,getNewRegister(program), location, currentArraySize);
++
++						gen_blt_instruction(program, endOfThisElaboration, 0);/*il prossimo da incrementare rimane 							sempre first_index_to_be_incremented_reg, il primo registro nell'ordine di incremento, se 							salto a endOfThisElaboration*/
++
++						gen_addi_instruction(program, location, REG_0, 0);
++
++						if(LPREV(iei)) {
++
++							/*
++							se l'index ha raggiunto il suo massimo e non è l'ultimo nell' ordine di incremento, 								va azzerato; e quello che lo segue nell' ordine di incremento va segnato come da 								incrementare nell prossimo giro
++							*/
++
++							gen_subi_instruction(program, getNewRegister(program), ((id_exist_info *)LDATA(LPREV(iei)))->non_piu_incrementabile_reg, 1); 						
++							gen_bne_instruction(program, NextIndexIncrementabile, 0);
++
++							gen_addi_instruction(program, ((id_exist_info *)LDATA(iei))->non_piu_incrementabile_reg, REG_0, 1);
++							gen_bt_instruction(program, endOfThisElaboration, 0);
++
++							assignLabel(program, NextIndexIncrementabile);	
++
++							gen_addi_instruction(program, ((id_exist_info *)LDATA(LPREV(iei)))->to_be_incremented_reg, REG_0, 1); 
++							gen_addi_instruction(program, first_index_to_be_incremented_reg, REG_0, 0);
++
++						}else{
++							/*se l'index ha raggiunto il suo massimo ed è l'ultimo nell' ordine di incremento*/
++							gen_addi_instruction(program, ((id_exist_info *)LDATA(iei))->non_piu_incrementabile_reg, REG_0, 1);
++							}
++						/*
++						torniamo prima ad incrementare il prossimo nell'ordine di incremento prima di tornare qui 							*/
++						gen_bt_instruction(program, begin_incremento, 0);
++
++						assignLabel(program, endOfThisElaboration);
++			    	 		break;
++		     			} 
++
++		   			iei = LPREV(iei);
++
++	   			}
++
++			}else {
++
++				   /*l'ID non è nella lista exist*/
++				   if(notFound) location = get_symbol_location(program, $1, 0);
++
++				}
+                    
                      /* return the register location of IDENTIFIER as
                       * a value for `exp' */
                      $$ = create_expression (location, REGISTER);
@@ -538,16 +538,16 @@ exp: NUMBER      { $$ = create_expression ($1, IMMEDIATE); }
    }
 
    | IDENTIFIER {
-
-		if(exist){
-			currentArraySize = ((t_axe_variable*)getVariable(program, $1))->arraySize;
-		}
-	
-	} 
-
++
++		if(exist){
++			currentArraySize = ((t_axe_variable*)getVariable(program, $1))->arraySize;
++		}
++	
++	} 
++
 	LSQUARE exp RSQUARE {
 
-		int reg = gen_load_immediate(program, 0);
+		int reg;;
 
 		    
 		/* load the value IDENTIFIER[exp]
@@ -564,87 +564,87 @@ exp: NUMBER      { $$ = create_expression ($1, IMMEDIATE); }
 		if(exist) currentArraySize = 0;
    	}
 
-   | EXISTS list_ids { 
-		
-		$1 = assignNewLabel(program);
-		begin_incremento = newLabel(program);
-
- 	} 
-
-	LPAR exp RPAR {
-
-		// Increment the index
-
-		t_axe_label *settata_nuova_n_tupla = newLabel(program);
-
-		int tutte_le_tuple_sono_state_provate = getNewRegister(program);
-
-		gen_addi_instruction(program, tutte_le_tuple_sono_state_provate, REG_0, 0);
-	
-		assignLabel(program, begin_incremento);
-
-		t_list *p = getElementAt(exist, 0);
-
-		while(p){
-
-			id_exist_info *idExistInfo = ((id_exist_info *)LDATA(p));
-
-			t_axe_label *not_incremented = newLabel(program), *end = newLabel(program);
-
-			t_axe_expression to_be_incremented_exp = handle_binary_comparison(program, create_expression(idExistInfo->to_be_incremented_reg, REGISTER), create_expression(1, IMMEDIATE), _EQ_);
-
-			t_axe_expression incrementabile_exp = handle_binary_comparison(program, create_expression(idExistInfo->non_piu_incrementabile_reg, REGISTER), create_expression(0, IMMEDIATE), _EQ_);
-
-			handle_bin_numeric_op(program, to_be_incremented_exp, incrementabile_exp, ANDB);
-
-			gen_beq_instruction(program, not_incremented, 0);	
-
-			gen_addi_instruction(program, idExistInfo->index_reg, idExistInfo->index_reg, 1);
-
-			gen_addi_instruction(program, first_index_to_be_incremented_reg, REG_0, 1);
-
-			gen_bt_instruction(program, settata_nuova_n_tupla, 0);	
-
-			assignLabel(program, not_incremented);
-	
-			p = p->next;
-
-		}
-
-		/*a questo punto del codice generato, tutte le n-tuple possibile sono state provate*/
-		gen_addi_instruction(program, tutte_le_tuple_sono_state_provate, tutte_le_tuple_sono_state_provate, 1);
-
-		assignLabel(program, settata_nuova_n_tupla);
-
-		// Define conditions to stop iteration
-
-		t_axe_expression tutte_le_tuple_sono_state_provate_exp = create_expression(tutte_le_tuple_sono_state_provate, REGISTER);
-
-		t_axe_expression exp_is_true = handle_binary_comparison (program, $5, create_expression(1, IMMEDIATE), _EQ_);
-
-		t_axe_expression exp_is_false = handle_binary_comparison (program, $5, create_expression(0, IMMEDIATE), _EQ_);
-
-		t_axe_expression second_condition_exp = handle_bin_numeric_op(program, tutte_le_tuple_sono_state_provate_exp, exp_is_false, ANDB);
-
-		t_axe_expression final_condition_exp = handle_bin_numeric_op(program, exp_is_true, second_condition_exp, ORB);
-
-		gen_beq_instruction(program, $1, 0);
-	   	
-	   	// final_result_exp==1 then exists is satisfied)
-	   	$$ = final_condition_exp;
-
-	   	// free del current EXISTS.
-		while(exist) {
-
-		   free(((id_exist_info *)LDATA(getElementAt(exist, 0)))->id);
-
-		   free((id_exist_info *)LDATA(getElementAt(exist, 0)));
-
-		   exist = removeFirst(exist);  
-
-		}
-
-   	}
++  | EXISTS list_ids { 
++		
++		$1 = assignNewLabel(program);
++		begin_incremento = newLabel(program);
++
++	} 
++
++	LPAR exp RPAR {
++
++		// Increment the index
++
++		t_axe_label *settata_nuova_n_tupla = newLabel(program);
++
++		int tutte_le_tuple_sono_state_provate = getNewRegister(program);
++
++		gen_addi_instruction(program, tutte_le_tuple_sono_state_provate, REG_0, 0);
++	
++		assignLabel(program, begin_incremento);
++
++		t_list *p = getElementAt(exist, 0);
++
++		while(p){
++
++			id_exist_info *idExistInfo = ((id_exist_info *)LDATA(p));
++
++			t_axe_label *not_incremented = newLabel(program), *end = newLabel(program);
++
++			t_axe_expression to_be_incremented_exp = handle_binary_comparison(program, create_expression(idExistInfo->to_be_incremented_reg, REGISTER), create_expression(1, IMMEDIATE), _EQ_);
++
++			t_axe_expression incrementabile_exp = handle_binary_comparison(program, create_expression(idExistInfo->non_piu_incrementabile_reg, REGISTER), create_expression(0, IMMEDIATE), _EQ_);
++
++			handle_bin_numeric_op(program, to_be_incremented_exp, incrementabile_exp, ANDB);
++
++			gen_beq_instruction(program, not_incremented, 0);	
++
++			gen_addi_instruction(program, idExistInfo->index_reg, idExistInfo->index_reg, 1);
++
++			gen_addi_instruction(program, first_index_to_be_incremented_reg, REG_0, 1);
++
++			gen_bt_instruction(program, settata_nuova_n_tupla, 0);	
++
++			assignLabel(program, not_incremented);
++	
++			p = p->next;
++
++		}
++
++		/*a questo punto del codice generato, tutte le n-tuple possibile sono state provate*/
++		gen_addi_instruction(program, tutte_le_tuple_sono_state_provate, tutte_le_tuple_sono_state_provate, 1);
++
++		assignLabel(program, settata_nuova_n_tupla);
++
++		// Define conditions to stop iteration
++
++		t_axe_expression tutte_le_tuple_sono_state_provate_exp = create_expression(tutte_le_tuple_sono_state_provate, REGISTER);
++
++		t_axe_expression exp_is_true = handle_binary_comparison (program, $5, create_expression(1, IMMEDIATE), _EQ_);
++
++		t_axe_expression exp_is_false = handle_binary_comparison (program, $5, create_expression(0, IMMEDIATE), _EQ_);
++
++		t_axe_expression second_condition_exp = handle_bin_numeric_op(program, tutte_le_tuple_sono_state_provate_exp, exp_is_false, ANDB);
++
++		t_axe_expression final_condition_exp = handle_bin_numeric_op(program, exp_is_true, second_condition_exp, ORB);
++
++		gen_beq_instruction(program, $1, 0);
++	   	
++	   	// final_result_exp==1 then exists is satisfied)
++	   	$$ = final_condition_exp;
++
++	   	// free del current EXISTS.
++		while(exist) {
++
++		   free(((id_exist_info *)LDATA(getElementAt(exist, 0)))->id);
++
++		   free((id_exist_info *)LDATA(getElementAt(exist, 0)));
++
++		   exist = removeFirst(exist);  
++
++		}
++
++  	}
 
    | NOT_OP NUMBER   {  if ($2 == 0)
                            $$ = create_expression (1, IMMEDIATE);
@@ -734,43 +734,43 @@ exp: NUMBER      { $$ = create_expression ($1, IMMEDIATE); }
                      } 
 ;
 
-list_ids: list_ids COMMA IDENTIFIER {
-
-		id_exist_info *idExistInfo = (id_exist_info *)malloc(sizeof(id_exist_info));
-
-	  	idExistInfo->id = strdup($3);
-
-	   	idExistInfo->index_reg = gen_load_immediate(program, 0);
-
-		idExistInfo->non_piu_incrementabile_reg = gen_load_immediate(program, 0);
-
-		idExistInfo->to_be_incremented_reg = gen_load_immediate(program, 0);
-
-	 	exist = addLast(exist, idExistInfo); 
-	} 
-
- 	 | IDENTIFIER {
-
-    		if (exist != NULL)
-   			notifyError(AXE_SYNTAX_ERROR);
-
-		id_exist_info *idExistInfo = (id_exist_info *)malloc(sizeof(id_exist_info));
-
-	  	idExistInfo->id = strdup($1);
-
-	   	idExistInfo->index_reg = gen_load_immediate(program, 0);
-
-		idExistInfo->non_piu_incrementabile_reg = gen_load_immediate(program, 0);
-
-		idExistInfo->to_be_incremented_reg = gen_load_immediate(program, 1);
-
-		first_index_to_be_incremented_reg = idExistInfo->to_be_incremented_reg;
-
-	 	exist = addLast(exist, idExistInfo); 
-	
-	}
-
-;
++list_ids: list_ids COMMA IDENTIFIER {
++
++		id_exist_info *idExistInfo = (id_exist_info *)malloc(sizeof(id_exist_info));
++
++	  	idExistInfo->id = strdup($3);
++
++	   	idExistInfo->index_reg = gen_load_immediate(program, 0);
++
++		idExistInfo->non_piu_incrementabile_reg = gen_load_immediate(program, 0);
++
++		idExistInfo->to_be_incremented_reg = gen_load_immediate(program, 0);
++
++	 	exist = addLast(exist, idExistInfo); 
++	} 
++
++	 | IDENTIFIER {
++
++    		if (exist != NULL)
++  			notifyError(AXE_SYNTAX_ERROR);
++
++		id_exist_info *idExistInfo = (id_exist_info *)malloc(sizeof(id_exist_info));
++
++	  	idExistInfo->id = strdup($1);
++
++	   	idExistInfo->index_reg = gen_load_immediate(program, 0);
++
++		idExistInfo->non_piu_incrementabile_reg = gen_load_immediate(program, 0);
++
++		idExistInfo->to_be_incremented_reg = gen_load_immediate(program, 1);
++
++		first_index_to_be_incremented_reg = idExistInfo->to_be_incremented_reg;
++
++	 	exist = addLast(exist, idExistInfo); 
++	
++	}
++
++;
 
 %%
 /*=========================================================================
