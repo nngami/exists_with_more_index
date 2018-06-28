@@ -1,0 +1,54 @@
+int a[5], b[5];
+int x = 3;
+
+a[0] = 0;
+a[1] = 1;
+a[2] = 2;
+a[3] = 3;
+a[4] = 4;
+
+b[0] = 0;
+b[1] = 1;
+b[2] = 2;
+b[3] = 3;
+b[4] = 4;
+
+if ( exists i, j (a[i]>9 | a[j]<9) ) 
+	write(1);
+else
+	write(0);
+
+
+if ( exists i (a[i]>10) ) 
+	write(1);
+else
+	write(0);
+	
+if ( exists i, j, k, z (a[3]>2 | a[3]>2 | b[3]>2 & b[3]>2) ) 
+	write(1);
+else
+	write(0);
+	
+if ( exists i, z ( (a[x]>2) + (b[x]>2) ) ) 
+	write(1);
+else
+	write(0);
+	
+if ( exists x, v( (a[x]>10) - (b[v]>10) ) )
+	write(1);
+else
+	write(0);
+	
+	
+if ( exists i, u ( (a[i]>2) & (b[u]>2) ) )
+	write(1);
+else
+	write(0);
+
+
+if ( exists i, g( (a[i/3]>2) == (b[g/3]>2) ) )
+	write(1);
+else
+	write(0);
+	
+
