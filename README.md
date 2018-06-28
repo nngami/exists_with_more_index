@@ -5,4 +5,6 @@ wrong ippotesi: Ho ippotizzato che gli index_reg di ogni index deve stare tra 0 
 
 version_1: se  la condizione di fine sono quindi se exists è true o se è stato raggiunto il limite fisico.
 
-versione_2: la condizione di fine è quindi se exists è true o se sono stati provati tutti i possibili valore della n-tupla di index limitato dal rispettivo arraysize dell array in cui apparve come indice, un'index per array. Es: exists i,j,k (a[i]>0 && b[j]==1 && c[k]==2)
+versione_2: la condizione di fine è quindi se exists è true o se sono stati provati tutti i possibili valore della n-tupla di index limitato dal rispettivo arraysize dell array in cui apparve come indice, un'index per array. Es: exists i,j,k (a[i]>0 && b[j]==1 && c[k]==2).
+
+versione finale funzionante: valuta di tutti valori possibile dell' n-uplet senza jump. le precedente versione impallavano per quello. in questa versione il valore dell n uplet viene rappresentato in base il size dell ' array: index_n*BASE^n + ...... + index_0*BASE^0, es: int a[5], b[5] viene scomposto cosi index_1*5^1 + index_0*BASE^0.
